@@ -8,6 +8,7 @@ import {
   MapPinned,
   RotateCcw,
   Search,
+  SlidersHorizontal,
   Sparkles,
   TableProperties,
   TrendingUp
@@ -196,6 +197,7 @@ function ChartCard({
 
 export function Dashboard({ rows, manifest }: DashboardProps) {
   const [filters, setFilters] = useState<SharedFilters>(initialFilters);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const analysisRows = useMemo(
     () => rows.filter((row) => row.phase !== "0"),
@@ -270,16 +272,29 @@ export function Dashboard({ rows, manifest }: DashboardProps) {
 
   return (
     <div className="space-y-5">
-      <section className="sticky top-0 z-40 -mx-4 border-b border-slate-200 bg-slate-50/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <section className="sticky top-0 z-40 -mx-4 border-b border-slate-200 bg-slate-50/95 px-4 py-1.5 backdrop-blur sm:-mx-6 sm:px-6 md:py-2 lg:-mx-8 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
               <Filter className="h-4 w-4" />
               Filters
             </div>
-            <Badge variant="outline" className="w-fit rounded-md px-2 py-1">
-              {filteredRows.length.toLocaleString("en-SG")} matching rows
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="w-fit rounded-md px-2 py-1">
+                {filteredRows.length.toLocaleString("en-SG")} matching rows
+              </Badge>
+              <Button
+                aria-expanded={showMobileFilters}
+                className="h-8 px-2 md:hidden"
+                onClick={() => setShowMobileFilters((current) => !current)}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                {showMobileFilters ? "Hide" : "More"}
+              </Button>
+            </div>
           </div>
 
           <div className="grid items-end gap-2 md:grid-cols-2 xl:grid-cols-[minmax(220px,1.3fr)_minmax(170px,0.9fr)_repeat(4,minmax(118px,0.6fr))_auto_auto]">
@@ -301,95 +316,103 @@ export function Dashboard({ rows, manifest }: DashboardProps) {
               </div>
             </label>
 
-            <label className="grid gap-1">
-              <span className="text-[11px] font-medium text-slate-500">
-                School
-              </span>
-              <Input
-                aria-label="School name"
-                className="h-9 rounded-md text-xs"
-                placeholder="e.g. Rosyth"
-                value={filters.school}
-                onChange={(event) =>
-                  setFilters((current) => ({ ...current, school: event.target.value }))
+            <div
+              className={`grid items-end gap-2 md:contents ${
+                showMobileFilters ? "" : "hidden md:contents"
+              }`}
+            >
+              <label className="grid gap-1">
+                <span className="text-[11px] font-medium text-slate-500">
+                  School
+                </span>
+                <Input
+                  aria-label="School name"
+                  className="h-9 rounded-md text-xs"
+                  placeholder="e.g. Rosyth"
+                  value={filters.school}
+                  onChange={(event) =>
+                    setFilters((current) => ({ ...current, school: event.target.value }))
+                  }
+                />
+              </label>
+
+              <SelectField
+                label="Year"
+                value={filters.year}
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, year: value }))
                 }
-              />
-            </label>
+              >
+                <option value="">All years</option>
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </SelectField>
 
-            <SelectField
-              label="Year"
-              value={filters.year}
-              onChange={(value) =>
-                setFilters((current) => ({ ...current, year: value }))
-              }
-            >
-              <option value="">All years</option>
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </SelectField>
+              <SelectField
+                label="Phase"
+                value={filters.phase}
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, phase: value }))
+                }
+              >
+                <option value="">All phases</option>
+                {phases.map((phase) => (
+                  <option key={phase} value={phase}>
+                    Phase {phase}
+                  </option>
+                ))}
+              </SelectField>
 
-            <SelectField
-              label="Phase"
-              value={filters.phase}
-              onChange={(value) =>
-                setFilters((current) => ({ ...current, phase: value }))
-              }
-            >
-              <option value="">All phases</option>
-              {phases.map((phase) => (
-                <option key={phase} value={phase}>
-                  Phase {phase}
-                </option>
-              ))}
-            </SelectField>
+              <SelectField
+                label="Balloting"
+                value={filters.balloting}
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, balloting: value }))
+                }
+              >
+                <option value="">Any</option>
+                <option value="yes">Required</option>
+                <option value="no">Not required</option>
+                <option value="na">N/A</option>
+              </SelectField>
 
-            <SelectField
-              label="Balloting"
-              value={filters.balloting}
-              onChange={(value) =>
-                setFilters((current) => ({ ...current, balloting: value }))
-              }
-            >
-              <option value="">Any</option>
-              <option value="yes">Required</option>
-              <option value="no">Not required</option>
-              <option value="na">N/A</option>
-            </SelectField>
+              <SelectField
+                label="Oversubscribed"
+                value={filters.oversubscribed}
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, oversubscribed: value }))
+                }
+              >
+                <option value="">Any</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </SelectField>
 
-            <SelectField
-              label="Oversubscribed"
-              value={filters.oversubscribed}
-              onChange={(value) =>
-                setFilters((current) => ({ ...current, oversubscribed: value }))
-              }
-            >
-              <option value="">Any</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </SelectField>
-
-            <Button
-              aria-label={`Reset filters. ${activeFilterCount} active`}
-              className="h-9"
-              size="icon"
-              variant="outline"
-              onClick={() => setFilters(initialFilters)}
-              type="button"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button
-              aria-label="Export filtered CSV"
-              className="h-9"
-              size="icon"
-              onClick={() => exportFilteredCsv(filteredRows)}
-              type="button"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
+              <div className="grid grid-cols-2 gap-2 md:flex">
+                <Button
+                  aria-label={`Reset filters. ${activeFilterCount} active`}
+                  className="h-9"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => setFilters(initialFilters)}
+                  type="button"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+                <Button
+                  aria-label="Export filtered CSV"
+                  className="h-9"
+                  size="icon"
+                  onClick={() => exportFilteredCsv(filteredRows)}
+                  type="button"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
