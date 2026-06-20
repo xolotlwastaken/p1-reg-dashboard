@@ -1,0 +1,42 @@
+{
+  "name": "p1-reg-scraper",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "scrape": "sh -c 'if [ -x .venv/bin/python ]; then .venv/bin/python scripts/scrape_p1_data.py; else python3 scripts/scrape_p1_data.py; fi'",
+    "test": "npm run test:unit && npm run test:python",
+    "test:unit": "vitest run",
+    "test:python": "sh -c 'if [ -x .venv/bin/python ]; then .venv/bin/python -m unittest discover -s tests/python -p \"test_*.py\"; else python3 -m unittest discover -s tests/python -p \"test_*.py\"; fi'",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.3.0",
+    "@radix-ui/react-tabs": "^1.1.15",
+    "@tanstack/react-table": "^8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.525.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.4",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "jsdom": "^26.0.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
